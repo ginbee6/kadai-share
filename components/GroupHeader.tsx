@@ -23,12 +23,14 @@ export default function GroupHeader({ group }: Props) {
   return (
     <div className="bg-indigo-600 text-white shadow-md">
       <div className="max-w-2xl mx-auto px-4 py-4">
-        <Link
-          href="/"
-          className="text-indigo-200 hover:text-white transition-colors text-sm mb-2 inline-block"
-        >
-          ← ホーム
-        </Link>
+        <div className="flex items-center gap-4 mb-2">
+          <Link href="/" className="text-indigo-200 hover:text-white transition-colors text-sm">
+            ← ホーム
+          </Link>
+          <Link href="/calendar" className="text-indigo-200 hover:text-white transition-colors text-sm">
+            📅 カレンダー
+          </Link>
+        </div>
         <h1 className="text-xl font-bold mb-2">{group.name}</h1>
         <div className="flex items-center gap-2 flex-wrap">
           <span className="text-indigo-200 text-sm">招待コード:</span>

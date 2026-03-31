@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import JoinCreateGroup from '@/components/JoinCreateGroup'
 
 export default function Home() {
@@ -10,6 +11,12 @@ export default function Home() {
           <p className="text-gray-500 text-sm">
             クラスの課題・締め切りをみんなで共有しよう
           </p>
+          <Link
+            href="/calendar"
+            className="inline-flex items-center gap-1.5 mt-4 bg-white border border-indigo-200 text-indigo-600 text-sm font-medium px-4 py-2 rounded-full hover:bg-indigo-50 transition-colors shadow-sm"
+          >
+            📅 マイカレンダーを見る
+          </Link>
         </div>
         <JoinCreateGroup />
       </div>
