@@ -19,6 +19,7 @@ export default function AssignmentList({ groupId, initialAssignments }: Props) {
   const [assignments, setAssignments] = useState<Assignment[]>(initialAssignments)
   const [filter, setFilter] = useState<Filter>('incomplete')
   const [showModal, setShowModal] = useState(false)
+  const [editingAssignment, setEditingAssignment] = useState<Assignment | null>(null)
   const [refreshing, setRefreshing] = useState(false)
 
   // hydration後にlocalStorageの個人設定を適用
@@ -63,6 +64,15 @@ export default function AssignmentList({ groupId, initialAssignments }: Props) {
     )
     setShowModal(false)
     setFilter('incomplete')
+  }
+
+  function handleAssignmentEdited(updated: Assignment) {
+    setAssignments((prev) =>
+      prev
+        .map((a) => (a.id === updated.id ? { ...updated, completed: a.completed } : a))
+        .sort((a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime())
+    )
+    setEditingAssignment(null)
   }
 
   async function handleRefresh() {
@@ -143,6 +153,7 @@ export default function AssignmentList({ groupId, initialAssignments }: Props) {
               assignment={assignment}
               onToggleComplete={handleToggleComplete}
               onDelete={handleDelete}
+              onEdit={setEditingAssignment}
             />
           ))}
         </div>
@@ -161,6 +172,15 @@ export default function AssignmentList({ groupId, initialAssignments }: Props) {
           groupId={groupId}
           onClose={() => setShowModal(false)}
           onAdded={handleAssignmentAdded}
+        />
+      )}
+
+      {editingAssignment && (
+        <AddAssignmentModal
+          groupId={groupId}
+          onClose={() => setEditingAssignment(null)}
+          onAdded={handleAssignmentEdited}
+          editAssignment={editingAssignment}
         />
       )}
     </div>

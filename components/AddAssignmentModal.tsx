@@ -7,19 +7,31 @@ interface Props {
   groupId: string
   onClose: () => void
   onAdded: (assignment: Assignment) => void
+  editAssignment?: Assignment // 指定時は編集モード
 }
 
-export default function AddAssignmentModal({ groupId, onClose, onAdded }: Props) {
+function toLocalDate(iso: string) {
+  const d = new Date(iso)
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+}
+
+function toLocalTime(iso: string) {
+  const d = new Date(iso)
+  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+}
+
+export default function AddAssignmentModal({ groupId, onClose, onAdded, editAssignment }: Props) {
+  const isEdit = !!editAssignment
   const today = new Date().toISOString().split('T')[0]
 
   const [form, setForm] = useState({
-    subject: '',
-    title: '',
-    deadline: today,
-    deadlineTime: '23:59',
-    priority: 'medium',
-    description: '',
-    createdBy: '',
+    subject: editAssignment?.subject ?? '',
+    title: editAssignment?.title ?? '',
+    deadline: editAssignment ? toLocalDate(editAssignment.deadline) : today,
+    deadlineTime: editAssignment ? toLocalTime(editAssignment.deadline) : '23:59',
+    priority: editAssignment?.priority ?? 'medium',
+    description: editAssignment?.description ?? '',
+    createdBy: editAssignment?.createdBy ?? '',
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -42,23 +54,29 @@ export default function AddAssignmentModal({ groupId, onClose, onAdded }: Props)
 
     try {
       const deadline = new Date(`${form.deadline}T${form.deadlineTime}:00`)
-      const res = await fetch(`/api/groups/${groupId}/assignments`, {
-        method: 'POST',
+      const body = {
+        subject: form.subject,
+        title: form.title,
+        deadline: deadline.toISOString(),
+        priority: form.priority,
+        description: form.description || null,
+        createdBy: form.createdBy || null,
+      }
+
+      const url = isEdit
+        ? `/api/groups/${groupId}/assignments/${editAssignment!.id}`
+        : `/api/groups/${groupId}/assignments`
+
+      const res = await fetch(url, {
+        method: isEdit ? 'PATCH' : 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          subject: form.subject,
-          title: form.title,
-          deadline: deadline.toISOString(),
-          priority: form.priority,
-          description: form.description || null,
-          createdBy: form.createdBy || null,
-        }),
+        body: JSON.stringify(body),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error)
       onAdded(data)
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : '課題の追加に失敗しました')
+      setError(err instanceof Error ? err.message : '保存に失敗しました')
     } finally {
       setLoading(false)
     }
@@ -68,13 +86,11 @@ export default function AddAssignmentModal({ groupId, onClose, onAdded }: Props)
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div className="relative bg-white rounded-t-2xl sm:rounded-2xl w-full max-w-md max-h-[92vh] overflow-y-auto">
-        {/* ヘッダー */}
         <div className="sticky top-0 bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between rounded-t-2xl">
-          <h2 className="text-lg font-semibold text-gray-800">課題を追加</h2>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 text-xl leading-none"
-          >
+          <h2 className="text-lg font-semibold text-gray-800">
+            {isEdit ? '課題を編集' : '課題を追加'}
+          </h2>
+          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl leading-none">
             ✕
           </button>
         </div>
@@ -86,7 +102,6 @@ export default function AddAssignmentModal({ groupId, onClose, onAdded }: Props)
             </div>
           )}
 
-          {/* 科目 */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               科目 <span className="text-red-500">*</span>
@@ -102,7 +117,6 @@ export default function AddAssignmentModal({ groupId, onClose, onAdded }: Props)
             />
           </div>
 
-          {/* タイトル */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               課題タイトル <span className="text-red-500">*</span>
@@ -118,7 +132,6 @@ export default function AddAssignmentModal({ groupId, onClose, onAdded }: Props)
             />
           </div>
 
-          {/* 締め切り日時 */}
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -147,7 +160,6 @@ export default function AddAssignmentModal({ groupId, onClose, onAdded }: Props)
             </div>
           </div>
 
-          {/* 優先度 */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">優先度</label>
             <div className="flex gap-2">
@@ -179,11 +191,9 @@ export default function AddAssignmentModal({ groupId, onClose, onAdded }: Props)
             </div>
           </div>
 
-          {/* 説明 */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              メモ・説明{' '}
-              <span className="text-gray-400 font-normal">(任意)</span>
+              メモ・説明 <span className="text-gray-400 font-normal">(任意)</span>
             </label>
             <textarea
               name="description"
@@ -195,11 +205,9 @@ export default function AddAssignmentModal({ groupId, onClose, onAdded }: Props)
             />
           </div>
 
-          {/* 追加者名 */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
-              追加者の名前{' '}
-              <span className="text-gray-400 font-normal">(任意)</span>
+              追加者の名前 <span className="text-gray-400 font-normal">(任意)</span>
             </label>
             <input
               type="text"
@@ -211,7 +219,6 @@ export default function AddAssignmentModal({ groupId, onClose, onAdded }: Props)
             />
           </div>
 
-          {/* ボタン */}
           <div className="flex gap-3 pt-2 pb-4">
             <button
               type="button"
@@ -225,7 +232,7 @@ export default function AddAssignmentModal({ groupId, onClose, onAdded }: Props)
               disabled={loading}
               className="flex-1 bg-indigo-600 text-white rounded-xl py-2.5 text-sm font-medium hover:bg-indigo-700 disabled:opacity-50 transition-colors"
             >
-              {loading ? '追加中...' : '課題を追加'}
+              {loading ? '保存中...' : isEdit ? '変更を保存' : '課題を追加'}
             </button>
           </div>
         </form>
