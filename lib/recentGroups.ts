@@ -24,7 +24,7 @@ export function saveRecentGroup(group: Omit<RecentGroup, 'lastVisited'>) {
     const updated: RecentGroup[] = [
       { ...group, lastVisited: new Date().toISOString() },
       ...groups,
-    ].slice(0, 10) // 最大10件
+    ]
     localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
   } catch {
     // ignore

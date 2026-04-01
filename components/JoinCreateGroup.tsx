@@ -12,6 +12,8 @@ export default function JoinCreateGroup() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [recentGroups, setRecentGroups] = useState<RecentGroup[]>([])
+  const [showAll, setShowAll] = useState(false)
+  const DISPLAY_LIMIT = 10
 
   useEffect(() => {
     setRecentGroups(getRecentGroups())
@@ -86,9 +88,12 @@ export default function JoinCreateGroup() {
       {/* 参加済みグループ一覧 */}
       {recentGroups.length > 0 && (
         <div className="bg-gray-900 rounded-2xl border border-gray-800 p-6">
-          <h2 className="text-lg font-semibold text-gray-100 mb-3">参加中のグループ</h2>
+          <div className="flex items-center justify-between mb-3">
+            <h2 className="text-lg font-semibold text-gray-100">参加中のグループ</h2>
+            <span className="text-xs text-gray-500">{recentGroups.length}件</span>
+          </div>
           <ul className="space-y-2">
-            {recentGroups.map((group) => (
+            {(showAll ? recentGroups : recentGroups.slice(0, DISPLAY_LIMIT)).map((group) => (
               <li key={group.id} className="flex items-center gap-2">
                 <Link
                   href={`/group/${group.id}`}
@@ -119,6 +124,16 @@ export default function JoinCreateGroup() {
               </li>
             ))}
           </ul>
+          {recentGroups.length > DISPLAY_LIMIT && (
+            <button
+              onClick={() => setShowAll((v) => !v)}
+              className="mt-3 w-full text-sm text-indigo-400 hover:text-indigo-300 py-2 border border-gray-700 rounded-xl hover:bg-gray-800 transition-colors"
+            >
+              {showAll
+                ? '▲ 折りたたむ'
+                : `▼ すべて表示（残り ${recentGroups.length - DISPLAY_LIMIT}件）`}
+            </button>
+          )}
         </div>
       )}
 
