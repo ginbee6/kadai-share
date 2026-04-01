@@ -30,6 +30,9 @@ export default function GroupHeader({ group }: Props) {
           <Link href="/calendar" className="text-indigo-200 hover:text-white transition-colors text-sm">
             📅 カレンダー
           </Link>
+          <Link href="/guide" className="text-indigo-200 hover:text-white transition-colors text-sm">
+            📖 使い方
+          </Link>
         </div>
         <h1 className="text-xl font-bold mb-2">{group.name}</h1>
         <div className="flex items-center gap-2 flex-wrap">
