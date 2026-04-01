@@ -138,6 +138,29 @@ export default function GuidePage() {
           </div>
         ))}
 
+        {/* プライバシーについて */}
+        <div className="bg-white rounded-2xl shadow-sm p-5 border-l-4 border-gray-300">
+          <h2 className="font-bold text-gray-800 mb-3">🔒 プライバシーについて</h2>
+          <div className="space-y-2 text-sm text-gray-600">
+            <div className="flex items-start gap-2">
+              <span className="text-green-500 font-bold flex-shrink-0">✓</span>
+              <span>メールアドレス・氏名・パスワードなどの個人情報は一切収集していません</span>
+            </div>
+            <div className="flex items-start gap-2">
+              <span className="text-green-500 font-bold flex-shrink-0">✓</span>
+              <span>完了状態・非表示設定はあなたのブラウザ内にのみ保存されます（サーバーには送信されません）</span>
+            </div>
+            <div className="flex items-start gap-2">
+              <span className="text-yellow-500 font-bold flex-shrink-0">!</span>
+              <span>グループ名・課題内容・追加者名はサーバーに保存されます。本名の入力は避け、ニックネームの使用を推奨します</span>
+            </div>
+            <div className="flex items-start gap-2">
+              <span className="text-yellow-500 font-bold flex-shrink-0">!</span>
+              <span>招待コードを知っている人は誰でもグループにアクセスできます。信頼できる相手にのみ共有してください</span>
+            </div>
+          </div>
+        </div>
+
         {/* カラー凡例 */}
         <div className="bg-white rounded-2xl shadow-sm p-5">
           <h2 className="font-bold text-gray-800 mb-3">⚠️ 締め切りの色の見方</h2>
