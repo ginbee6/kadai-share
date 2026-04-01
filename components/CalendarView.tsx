@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { getRecentGroups } from '@/lib/recentGroups'
 import { getDeadlineStatus, formatDeadline } from '@/lib/utils'
+import { applyUserPrefs } from '@/lib/userPrefs'
 import type { Assignment } from '@/lib/types'
 
 type AssignmentWithGroup = Assignment & { groupName: string; groupId: string }
@@ -44,7 +45,7 @@ export default function CalendarView() {
             const res = await fetch(`/api/groups/${group.id}/assignments`)
             if (res.ok) {
               const data: Assignment[] = await res.json()
-              data.forEach((a) =>
+              applyUserPrefs(data).forEach((a) =>
                 results.push({ ...a, groupName: group.name, groupId: group.id })
               )
             }

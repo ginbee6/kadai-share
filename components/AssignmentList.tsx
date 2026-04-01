@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import AssignmentCard from './AssignmentCard'
 import AddAssignmentModal from './AddAssignmentModal'
 import type { Assignment } from '@/lib/types'
+import { applyUserPrefs, setCompleted, hideAssignment } from '@/lib/userPrefs'
 
 interface Props {
   groupId: string
@@ -20,6 +21,11 @@ export default function AssignmentList({ groupId, initialAssignments }: Props) {
   const [showModal, setShowModal] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
 
+  // hydration後にlocalStorageの個人設定を適用
+  useEffect(() => {
+    setAssignments(applyUserPrefs(initialAssignments))
+  }, [])
+
   const incompleteCount = assignments.filter((a) => !a.completed).length
   const urgentCount = assignments.filter((a) => {
     if (a.completed) return false
@@ -33,30 +39,20 @@ export default function AssignmentList({ groupId, initialAssignments }: Props) {
     return true
   })
 
-  async function handleToggleComplete(id: string) {
+  function handleToggleComplete(id: string) {
     const assignment = assignments.find((a) => a.id === id)
     if (!assignment) return
-
-    const res = await fetch(`/api/groups/${groupId}/assignments/${id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ completed: !assignment.completed }),
-    })
-    if (res.ok) {
-      setAssignments((prev) =>
-        prev.map((a) => (a.id === id ? { ...a, completed: !a.completed } : a))
-      )
-    }
+    const next = !assignment.completed
+    setCompleted(id, next)
+    setAssignments((prev) =>
+      prev.map((a) => (a.id === id ? { ...a, completed: next } : a))
+    )
   }
 
-  async function handleDelete(id: string) {
-    if (!confirm('この課題を削除しますか？')) return
-    const res = await fetch(`/api/groups/${groupId}/assignments/${id}`, {
-      method: 'DELETE',
-    })
-    if (res.ok) {
-      setAssignments((prev) => prev.filter((a) => a.id !== id))
-    }
+  function handleDelete(id: string) {
+    if (!confirm('この課題を非表示にしますか？\n（自分のみ。他のメンバーには影響しません）')) return
+    hideAssignment(id)
+    setAssignments((prev) => prev.filter((a) => a.id !== id))
   }
 
   function handleAssignmentAdded(newAssignment: Assignment) {
@@ -75,7 +71,7 @@ export default function AssignmentList({ groupId, initialAssignments }: Props) {
       const res = await fetch(`/api/groups/${groupId}/assignments`)
       if (res.ok) {
         const data = await res.json()
-        setAssignments(data)
+        setAssignments(applyUserPrefs(data))
         router.refresh()
       }
     } finally {
@@ -85,7 +81,6 @@ export default function AssignmentList({ groupId, initialAssignments }: Props) {
 
   return (
     <div className="py-4">
-      {/* 緊急アラート */}
       {urgentCount > 0 && (
         <div className="bg-red-50 border border-red-200 rounded-xl px-4 py-3 mb-4 flex items-center gap-2">
           <span className="text-red-500">⚠️</span>
@@ -95,7 +90,6 @@ export default function AssignmentList({ groupId, initialAssignments }: Props) {
         </div>
       )}
 
-      {/* フィルターと更新ボタン */}
       <div className="flex items-center gap-2 mb-4 flex-wrap">
         {(
           [
@@ -120,13 +114,11 @@ export default function AssignmentList({ groupId, initialAssignments }: Props) {
           onClick={handleRefresh}
           disabled={refreshing}
           className="ml-auto text-xs text-gray-400 hover:text-indigo-600 transition-colors disabled:opacity-50"
-          title="最新情報を取得"
         >
           {refreshing ? '更新中...' : '↻ 更新'}
         </button>
       </div>
 
-      {/* 課題リスト */}
       {filtered.length === 0 ? (
         <div className="text-center py-16 text-gray-400">
           <div className="text-4xl mb-3">📭</div>
@@ -156,7 +148,6 @@ export default function AssignmentList({ groupId, initialAssignments }: Props) {
         </div>
       )}
 
-      {/* 追加ボタン (FAB) */}
       <button
         onClick={() => setShowModal(true)}
         className="fixed bottom-6 right-6 bg-indigo-600 text-white w-14 h-14 rounded-full shadow-lg hover:bg-indigo-700 active:scale-95 transition-all flex items-center justify-center text-2xl font-light"
@@ -165,7 +156,6 @@ export default function AssignmentList({ groupId, initialAssignments }: Props) {
         +
       </button>
 
-      {/* 追加モーダル */}
       {showModal && (
         <AddAssignmentModal
           groupId={groupId}
