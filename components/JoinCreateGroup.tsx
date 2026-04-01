@@ -13,7 +13,7 @@ export default function JoinCreateGroup() {
   const [error, setError] = useState('')
   const [recentGroups, setRecentGroups] = useState<RecentGroup[]>([])
   const [showAll, setShowAll] = useState(false)
-  const DISPLAY_LIMIT = 10
+  const DISPLAY_LIMIT = 5
 
   useEffect(() => {
     setRecentGroups(getRecentGroups())
