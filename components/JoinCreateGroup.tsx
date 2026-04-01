@@ -78,38 +78,38 @@ export default function JoinCreateGroup() {
   return (
     <div className="space-y-6">
       {error && (
-        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
+        <div className="bg-red-950 border border-red-700 text-red-400 px-4 py-3 rounded-xl text-sm">
           {error}
         </div>
       )}
 
       {/* 参加済みグループ一覧 */}
       {recentGroups.length > 0 && (
-        <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-3">参加中のグループ</h2>
+        <div className="bg-gray-900 rounded-2xl border border-gray-800 p-6">
+          <h2 className="text-lg font-semibold text-gray-100 mb-3">参加中のグループ</h2>
           <ul className="space-y-2">
             {recentGroups.map((group) => (
               <li key={group.id} className="flex items-center gap-2">
                 <Link
                   href={`/group/${group.id}`}
-                  className="flex-1 flex items-center justify-between bg-indigo-50 hover:bg-indigo-100 border border-indigo-100 rounded-xl px-4 py-3 transition-colors group"
+                  className="flex-1 flex items-center justify-between bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-xl px-4 py-3 transition-colors group"
                 >
                   <div>
-                    <p className="font-medium text-indigo-700 text-sm group-hover:underline">
+                    <p className="font-medium text-indigo-400 text-sm group-hover:underline">
                       {group.name}
                     </p>
-                    <p className="text-xs text-gray-400 mt-0.5 font-mono tracking-wider">
+                    <p className="text-xs text-gray-500 mt-0.5 font-mono tracking-wider">
                       {group.inviteCode}
                     </p>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs text-gray-400">{formatLastVisited(group.lastVisited)}</p>
-                    <p className="text-xs text-indigo-400 mt-0.5">→ 開く</p>
+                    <p className="text-xs text-gray-500">{formatLastVisited(group.lastVisited)}</p>
+                    <p className="text-xs text-indigo-500 mt-0.5">→ 開く</p>
                   </div>
                 </Link>
                 <button
                   onClick={() => handleRemove(group.id)}
-                  className="text-gray-300 hover:text-red-400 transition-colors p-1"
+                  className="text-gray-600 hover:text-red-500 transition-colors p-1"
                   title="リストから削除"
                 >
                   <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -123,24 +123,24 @@ export default function JoinCreateGroup() {
       )}
 
       {/* グループ作成 */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-        <h2 className="text-lg font-semibold text-gray-800 mb-4">グループを作成する</h2>
+      <div className="bg-gray-900 rounded-2xl border border-gray-800 p-6">
+        <h2 className="text-lg font-semibold text-gray-100 mb-4">グループを作成する</h2>
         <form onSubmit={handleCreate} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">グループ名</label>
+            <label className="block text-sm font-medium text-gray-400 mb-1">グループ名</label>
             <input
               type="text"
               value={groupName}
               onChange={(e) => setGroupName(e.target.value)}
               placeholder="例: 2年3組、情報工学科2024"
-              className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400"
+              className="w-full bg-gray-800 border border-gray-700 text-gray-100 placeholder-gray-600 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
               required
             />
           </div>
           <button
             type="submit"
             disabled={loading || !groupName.trim()}
-            className="w-full bg-indigo-600 text-white rounded-xl py-2.5 text-sm font-medium hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="w-full bg-indigo-600 text-white rounded-xl py-2.5 text-sm font-medium hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {loading ? '作成中...' : 'グループを作成'}
           </button>
@@ -149,27 +149,25 @@ export default function JoinCreateGroup() {
 
       <div className="relative">
         <div className="absolute inset-0 flex items-center">
-          <div className="w-full border-t border-gray-200" />
+          <div className="w-full border-t border-gray-800" />
         </div>
         <div className="relative flex justify-center text-sm">
-          <span className="px-3 bg-gradient-to-br from-indigo-50 to-blue-50 text-gray-500">
-            または
-          </span>
+          <span className="px-3 bg-black text-gray-600">または</span>
         </div>
       </div>
 
       {/* グループ参加 */}
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-        <h2 className="text-lg font-semibold text-gray-800 mb-4">グループに参加する</h2>
+      <div className="bg-gray-900 rounded-2xl border border-gray-800 p-6">
+        <h2 className="text-lg font-semibold text-gray-100 mb-4">グループに参加する</h2>
         <form onSubmit={handleJoin} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">招待コード</label>
+            <label className="block text-sm font-medium text-gray-400 mb-1">招待コード</label>
             <input
               type="text"
               value={inviteCode}
               onChange={(e) => setInviteCode(e.target.value.toUpperCase())}
               placeholder="例: ABC123"
-              className="w-full border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-mono tracking-[0.3em] uppercase focus:outline-none focus:ring-2 focus:ring-indigo-400 text-center"
+              className="w-full bg-gray-800 border border-gray-700 text-gray-100 placeholder-gray-600 rounded-xl px-4 py-2.5 text-sm font-mono tracking-[0.3em] uppercase focus:outline-none focus:ring-2 focus:ring-indigo-500 text-center"
               maxLength={6}
               required
             />
@@ -177,7 +175,7 @@ export default function JoinCreateGroup() {
           <button
             type="submit"
             disabled={loading || inviteCode.trim().length !== 6}
-            className="w-full bg-white border-2 border-indigo-600 text-indigo-600 rounded-xl py-2.5 text-sm font-medium hover:bg-indigo-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="w-full bg-gray-800 border border-indigo-600 text-indigo-400 rounded-xl py-2.5 text-sm font-medium hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {loading ? '参加中...' : 'グループに参加'}
           </button>

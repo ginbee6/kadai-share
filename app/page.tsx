@@ -1,19 +1,29 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import JoinCreateGroup from '@/components/JoinCreateGroup'
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-50">
+    <main className="min-h-screen bg-black">
       <div className="max-w-md mx-auto px-4 py-12">
         <div className="text-center mb-10">
-          <div className="text-5xl mb-3">📚</div>
-          <h1 className="text-3xl font-bold text-indigo-700 mb-2">課題共有</h1>
-          <p className="text-gray-500 text-sm">
+          {/* ロゴ */}
+          <div className="mb-4">
+            <Image
+              src="/logo.png"
+              alt="KA-DDY"
+              width={400}
+              height={150}
+              priority
+              className="w-80 h-auto mx-auto"
+            />
+          </div>
+          <p className="text-gray-400 text-sm">
             クラスの課題・締め切りをみんなで共有しよう
           </p>
           <Link
             href="/calendar"
-            className="inline-flex items-center gap-1.5 mt-4 bg-white border border-indigo-200 text-indigo-600 text-sm font-medium px-4 py-2 rounded-full hover:bg-indigo-50 transition-colors shadow-sm"
+            className="inline-flex items-center gap-1.5 mt-4 bg-gray-900 border border-indigo-700 text-indigo-400 text-sm font-medium px-4 py-2 rounded-full hover:bg-gray-800 transition-colors"
           >
             📅 マイカレンダーを見る
           </Link>

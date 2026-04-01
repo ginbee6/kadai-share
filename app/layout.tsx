@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: '課題共有アプリ',
+  title: 'KA-DDY',
   description: 'クラスや授業の課題・締め切りをみんなで共有するアプリ',
 }
 
